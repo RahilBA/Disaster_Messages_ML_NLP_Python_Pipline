@@ -1,4 +1,20 @@
+
 # Disaster Response Pipeline Project
+This project is part of the Data Science Nonodegree Program by Udacity and data is provided by Figure Eight.
+
+### Objective: 
+The purpose of this project is to build a Natural Language Processing classifier that categorize the tweets and actual messages. 
+
+### This project is divided to 3 parts:
+1) Create ETL Pipeline to get and clean data, also save in a SQLlite database. 
+2) Create a Machine Learning Pipeline to train a NLP classifier. 
+3) Create an web App to show the result in Heroku. 
+
+### Installation 
+The following packages need to be installed:
+stopwords
+punkt
+wordnet
 
 ### Instructions:
 1. Run the following commands in the project's root directory to set up your database and model.

@@ -20,8 +20,7 @@ from sklearn.metrics import make_scorer, accuracy_score, f1_score, fbeta_score, 
 from scipy.stats import hmean
 from scipy.stats.mstats import gmean
 from nltk.corpus import stopwords
-from sklearn.pipeline import Pipeline
-from sklearn.metrics import classification_report, accuracy_score
+
 
 nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger','stopwords'])
 
@@ -35,8 +34,8 @@ def load_data(database_filepath):
         X and Y, Messages and Categories and name of categories
         
        '''
-    engine = create_engine('sqlite:///'+'DisasterResponse.db')
-    df = pd.read_sql_table('disaster' , engine)
+    engine = create_engine('sqlite:///'+database_filepath)
+    df = pd.read_sql_table('df' , engine)
     
     X = df['message']
     Y = df.iloc[:,4:]
@@ -87,8 +86,8 @@ def build_model():
                         ('clf' , MultiOutputClassifier(RandomForestClassifier()))
                         ])
         
-    parameters = {'clf__estimator__n_estimators':[50],
-                  'clf__estimator__min_samples_split':[5]
+    parameters = {'clf__estimator__n_estimators':[20,50],
+                  'clf__estimator__min_samples_split':[5,10]
                   ## 'clf__estimator__criterion':['gini','entropy'],
                   ## 'clf__estimator__max_features':['auto','log2']
                  }
@@ -102,7 +101,7 @@ def evaluate_model(model, X_test, Y_test, category_names):
     ''' 
     test trained model on test data 
      output:
-     accuracy, recall, and precision for all 36 categories
+     returns classifier performance metrics accuracy, recall, and precision for all 36 categories
      
      '''
     pred = model.predict(X_test)
