@@ -12,6 +12,4 @@
     `python run.py`
 
 3. Go to http://0.0.0.0:3001/
-# Disaster_Response_Pipeline
-# Disaster_Response_Pipeline
-# Disaster_Response_Pipeline
+
