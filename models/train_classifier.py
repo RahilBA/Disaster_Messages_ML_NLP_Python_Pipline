@@ -7,21 +7,18 @@ import pickle
 from sqlalchemy import create_engine
 import re
 import nltk
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.model_selection import train_test_split
-from sklearn.multioutput import MultiOutputClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,AdaBoostClassifier
-from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
+
+from sklearn.model_selection import train_test_split
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import make_scorer, accuracy_score, f1_score, fbeta_score, classification_report
-from scipy.stats import hmean
-from scipy.stats.mstats import gmean
-from nltk.corpus import stopwords
-
-
 nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger','stopwords'])
 
 
@@ -34,7 +31,7 @@ def load_data(database_filepath):
         X and Y, Messages and Categories and name of categories
         
        '''
-    engine = create_engine('sqlite:///'+database_filepath)
+    engine = create_engine('sqlite:///'+ database_filepath)
     df = pd.read_sql_table('df' , engine)
     
     X = df['message']
@@ -85,7 +82,7 @@ def build_model():
                         ('tfidf', TfidfTransformer()),
                         ('clf' , MultiOutputClassifier(RandomForestClassifier()))
                         ])
-        
+    ## selected 20 and 50 trees to speed up the training process    
     parameters = {'clf__estimator__n_estimators':[20,50],
                   'clf__estimator__min_samples_split':[5,10]
                   ## 'clf__estimator__criterion':['gini','entropy'],

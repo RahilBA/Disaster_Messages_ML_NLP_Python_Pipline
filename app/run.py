@@ -1,3 +1,4 @@
+import sys
 import json
 import plotly
 import pandas as pd
@@ -9,18 +10,17 @@ from nltk.corpus import stopwords
 
 from flask import Flask
 from flask import render_template, request, jsonify
+
 from plotly.graph_objs import Bar, Scatter
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
 from sqlalchemy import create_engine
 from collections import Counter
 from sklearn.externals import joblib
 
 
-
 app = Flask(__name__)
 
 def tokenize(text):
+    
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
 
@@ -32,8 +32,8 @@ def tokenize(text):
     return clean_tokens
 
 # load data
-engine = create_engine('sqlite:///../DisasterResponse.db')
-df = pd.read_sql_table('disaster', engine)
+engine = create_engine('sqlite:///../data/DisasterMessages.db')
+df = pd.read_sql_table('df', engine)
 
 # load model
 model = joblib.load("../models/classifier.pkl")
@@ -45,12 +45,17 @@ model = joblib.load("../models/classifier.pkl")
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     
+    # extract top 10 categories
+    #  counts
+    top_values = df.iloc[:,4:].sum().sort_values(ascending=False)[1:11]
+    # labels
+    top_labels = list(top_values.index)
+    
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
@@ -69,7 +74,26 @@ def index():
                     'title': "Genre"
                 }
             }
-        }
+        },
+        
+        {
+            'data':[
+                Bar(
+                    x= top_labels,
+                    y= top_values
+                )
+            ],
+            
+            'layout':{
+                'title' : 'Top Ten Labels',
+                'xaxis': {
+                    'title' : "Labels"
+                },
+                'yaxis':{
+                    'title': "Count"
+                }
+            }
+        }         
     ]
     
     # encode plotly graphs in JSON
@@ -98,7 +122,7 @@ def go():
     )
 
 def main():
-    app.run(host='0.0.0.0', port=3001, debug=True)
+     app.run(host='0.0.0.0', port=3001, debug=True)
 
 if __name__ == '__main__':
     main()
